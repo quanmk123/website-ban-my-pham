@@ -1,0 +1,54 @@
+@model Cosmetics.Web.ViewModels.OrderViewModel
+@{
+    ViewData["Title"] = $"Chi tiết đơn hàng #{Model.Id}";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Order" asp-action="MyOrders" class="text-rose">Đơn hàng</a></li>
+            <li class="breadcrumb-item active">Đơn #@Model.Id</li>
+        </ol>
+    </nav>
+
+    <div class="checkout-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Đơn hàng #@Model.Id</h4>
+            <span class="badge @Model.StatusBadgeClass fs-6">@Model.Status</span>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="text-muted mb-2">Thông tin giao hàng</h6>
+                <p class="mb-1"><strong>@Model.ReceiverName</strong> - @Model.PhoneNumber</p>
+                <p class="mb-1">@Model.FullAddress</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-muted mb-2">Thông tin đơn hàng</h6>
+                <p class="mb-1">Ngày đặt: @Model.FormattedDate</p>
+                <p class="mb-1">Thanh toán: @Model.PaymentMethod</p>
+                @if (!string.IsNullOrEmpty(Model.Note))
+                {
+                    <p class="mb-1">Ghi chú: @Model.Note</p>
+                }
+            </div>
+        </div>
+        <hr />
+        <h6 class="mb-3">Sản phẩm</h6>
+        @foreach (var item in Model.Items)
+        {
+            <div class="d-flex align-items-center mb-3">
+                <img src="@item.PictureUri" class="rounded" style="width:60px;height:60px;object-fit:cover;margin-right:16px;"
+                     onerror="this.src='/images/placeholder.png'" />
+                <div class="flex-grow-1">
+                    <strong>@item.ProductName</strong><br />
+                    <small class="text-muted">@item.FormattedPrice × @item.Units</small>
+                </div>
+                <strong>@item.FormattedSubtotal</strong>
+            </div>
+        }
+        <hr />
+        <div class="d-flex justify-content-end">
+            <strong class="fs-5">Tổng cộng: <span class="text-rose">@Model.FormattedTotal</span></strong>
+        </div>
+    </div>
+</div>

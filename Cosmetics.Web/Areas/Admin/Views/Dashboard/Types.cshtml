@@ -1,0 +1,53 @@
+@model IReadOnlyList<CatalogType>
+@{
+    ViewData["Title"] = "Quản lý Danh mục Loại Sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Danh mục Sản phẩm Mỹ phẩm</h3>
+        <p class="text-muted mb-0">Các nhóm sản phẩm như Kem chống nắng, Serum, Son môi, Nước tẩy trang...</p>
+    </div>
+    <a asp-action="CreateType" class="btn btn-rose rounded-pill px-3 shadow-sm">
+        <i class="fas fa-plus me-1"></i> Thêm danh mục
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var type in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-light text-muted border">#@type.Id</span></td>
+                            <td>
+                                <div class="fw-bold text-dark"><i class="fas fa-tag text-rose me-2"></i>@type.Name</div>
+                            </td>
+                            <td>
+                                <span class="text-muted">@(string.IsNullOrEmpty(type.Description) ? "Không có mô tả" : type.Description)</span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            Chưa có danh mục nào. Bấm "Thêm danh mục" để khởi tạo.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

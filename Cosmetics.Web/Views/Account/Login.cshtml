@@ -1,0 +1,55 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Đăng nhập";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-rose text-white text-center py-4 border-0">
+                    <div class="mb-2">
+                        <i class="fas fa-spa fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Đăng Nhập</h3>
+                    <p class="mb-0 text-white-50">Chào mừng bạn quay trở lại với BeautyStore</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <!-- Helper Box for Grading/Demo -->
+                    <div class="alert alert-light border mb-4 rounded-3 p-3 text-muted small">
+                        <div class="fw-semibold text-dark mb-1"><i class="fas fa-info-circle text-rose me-1"></i> Tài khoản mẫu dùng thử:</div>
+                        <div><strong>Admin:</strong> <code>admin@beauty.com</code> / <code>P@ssword123</code></div>
+                        <div><strong>Khách hàng:</strong> <code>customer@beauty.com</code> / <code>P@ssword123</code></div>
+                    </div>
+
+                    <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium"><i class="fas fa-envelope text-muted me-1"></i> Email</label>
+                            <input type="email" name="email" class="form-control form-control-lg rounded-3 fs-6" placeholder="name@example.com" required autofocus />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium"><i class="fas fa-lock text-muted me-1"></i> Mật khẩu</label>
+                            <input type="password" name="password" class="form-control form-control-lg rounded-3 fs-6" placeholder="••••••••" required />
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-rose btn-lg rounded-3 py-2 fw-semibold">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                            </button>
+                        </div>
+
+                        <div class="text-center pt-2">
+                            <span class="text-muted">Chưa có tài khoản?</span>
+                            <a asp-controller="Account" asp-action="Register" class="text-rose fw-semibold text-decoration-none ms-1">Đăng ký ngay</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

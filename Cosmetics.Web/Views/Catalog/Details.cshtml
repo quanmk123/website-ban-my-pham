@@ -1,0 +1,112 @@
+@model Cosmetics.Web.ViewModels.ProductDetailViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Catalog" asp-action="Index" class="text-rose">Sản phẩm</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="product-detail-section">
+        <div class="row g-5">
+            <!-- IMAGE -->
+            <div class="col-lg-5">
+                <div class="product-image">
+                    <img src="@Model.PictureUri" alt="@Model.Name" class="w-100"
+                         onerror="this.src='/images/placeholder.png'" />
+                </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="col-lg-7">
+                <span class="text-muted text-uppercase small fw-semibold">@Model.BrandName • @Model.BrandCountry</span>
+                <h1 class="mt-2 mb-3" style="font-size:1.8rem;">@Model.Name</h1>
+
+                <div class="d-flex align-items-center mb-4">
+                    <span class="detail-price">@Model.FormattedPrice</span>
+                    @if (Model.IsOnSale)
+                    {
+                        <span class="detail-original-price ms-3">@Model.FormattedOriginalPrice</span>
+                        <span class="discount-badge ms-3" style="position:static;">-@Model.DiscountPercent%</span>
+                    }
+                </div>
+
+                <p class="text-secondary mb-4" style="line-height:1.8;">@Model.Description</p>
+
+                <!-- THÔNG TIN CHI TIẾT -->
+                <table class="table info-table table-borderless">
+                    <tr>
+                        <th><i class="fas fa-box me-2 text-rose"></i>Dung tích</th>
+                        <td>@Model.Capacity</td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-hand-sparkles me-2 text-rose"></i>Loại da</th>
+                        <td>
+                            @foreach (var st in Model.SkinType.Split(',', StringSplitOptions.TrimEntries))
+                            {
+                                <span class="skin-type-badge">@st</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-flask me-2 text-rose"></i>Thành phần</th>
+                        <td>
+                            @foreach (var ing in Model.Ingredients.Split(',', StringSplitOptions.TrimEntries))
+                            {
+                                <span class="ingredient-tag">@ing</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-calendar me-2 text-rose"></i>Hạn sử dụng</th>
+                        <td>@Model.ExpiryNotice</td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-warehouse me-2 text-rose"></i>Tồn kho</th>
+                        <td>
+                            @if (Model.StockQuantity > 10)
+                            {
+                                <span class="stock-badge stock-ok">Còn hàng (@Model.StockQuantity)</span>
+                            }
+                            else if (Model.StockQuantity > 0)
+                            {
+                                <span class="stock-badge stock-low">Sắp hết (@Model.StockQuantity)</span>
+                            }
+                            else
+                            {
+                                <span class="stock-badge stock-out">Hết hàng</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-tag me-2 text-rose"></i>Danh mục</th>
+                        <td>@Model.TypeName</td>
+                    </tr>
+                </table>
+
+                @if (Model.InStock)
+                {
+                    <div class="d-flex gap-3 mt-4">
+                        <form asp-controller="Basket" asp-action="AddToBasket" method="post" class="flex-grow-1">
+                            <input type="hidden" name="catalogItemId" value="@Model.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-rose btn-lg w-100">
+                                <i class="fas fa-shopping-bag me-2"></i>Thêm vào giỏ hàng
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg w-100 mt-4" disabled>
+                        <i class="fas fa-times-circle me-2"></i>Sản phẩm tạm hết hàng
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

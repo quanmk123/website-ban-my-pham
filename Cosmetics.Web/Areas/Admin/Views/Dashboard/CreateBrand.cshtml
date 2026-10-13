@@ -1,0 +1,49 @@
+@model CatalogBrand
+@{
+    ViewData["Title"] = "Thêm Thương hiệu Mới";
+}
+
+<div class="mb-4">
+    <a asp-action="Brands" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h4 class="fw-bold mb-0 text-dark"><i class="fas fa-award text-rose me-2"></i>Thêm Thương hiệu mới</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="CreateBrand" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="alert alert-danger rounded-3" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên thương hiệu <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control rounded-3" placeholder="Ví dụ: La Roche-Posay, Innisfree..." required autofocus />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Quốc gia xuất xứ</label>
+                        <input asp-for="CountryOfOrigin" class="form-control rounded-3" placeholder="Ví dụ: Pháp, Hàn Quốc, Nhật Bản, Mỹ..." />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Mô tả giới thiệu thương hiệu</label>
+                        <textarea asp-for="Description" class="form-control rounded-3" rows="4" placeholder="Mô tả tóm tắt về lịch sử, sứ mệnh hoặc đặc điểm thương hiệu..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Brands" class="btn btn-light rounded-3 px-4">Hủy</a>
+                        <button type="submit" class="btn btn-rose rounded-3 px-4 fw-semibold">
+                            <i class="fas fa-save me-1"></i> Lưu thương hiệu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

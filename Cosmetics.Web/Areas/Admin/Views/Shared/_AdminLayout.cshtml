@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị BeautyStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        :root {
+            --admin-sidebar-width: 260px;
+        }
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-sidebar {
+            width: var(--admin-sidebar-width);
+            min-height: 100vh;
+            background: #2b2d42;
+            color: #edf2f4;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        .admin-sidebar .brand-header {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .admin-sidebar .nav-link {
+            color: #adb5bd;
+            padding: 0.8rem 1.25rem;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 0.2rem 0.8rem;
+            transition: all 0.2s;
+        }
+        .admin-sidebar .nav-link:hover,
+        .admin-sidebar .nav-link.active {
+            color: #ffffff;
+            background: rgba(212, 120, 140, 0.25);
+        }
+        .admin-sidebar .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+        }
+        .admin-content-wrapper {
+            margin-left: var(--admin-sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-topbar {
+            height: 64px;
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .stat-card {
+            border: 0;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .table-custom th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            border-top: none;
+            background: #fdfdfd;
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="brand-header d-flex align-items-center">
+            <i class="fas fa-spa text-rose fs-4 me-2"></i>
+            <div>
+                <h5 class="mb-0 fw-bold text-white">Beauty<span class="text-rose">Admin</span></h5>
+                <small class="text-muted" style="font-size: 0.75rem;">Hệ thống Quản trị Mỹ phẩm</small>
+            </div>
+        </div>
+
+        <div class="py-3">
+            <div class="text-uppercase px-4 py-2 text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Tổng quan</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+
+            <div class="text-uppercase px-4 py-2 mt-3 text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Quản lý kho hàng</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Product") == true ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Products">
+                <i class="fas fa-box-open"></i> Sản phẩm
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Brand") == true ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Brands">
+                <i class="fas fa-award"></i> Thương hiệu
+            </a>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Type") == true ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Types">
+                <i class="fas fa-tags"></i> Danh mục loại
+            </a>
+
+            <div class="text-uppercase px-4 py-2 mt-3 text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">Bán hàng & Đơn</div>
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString()?.Contains("Order") == true ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Orders">
+                <i class="fas fa-shopping-cart"></i> Đơn hàng
+            </a>
+
+            <hr class="border-secondary mx-3 my-3" />
+
+            <a class="nav-link" asp-area="" asp-controller="Catalog" asp-action="Index" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Xem Cửa Hàng
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="admin-content-wrapper">
+        <!-- TOPBAR -->
+        <header class="admin-topbar">
+            <div>
+                <span class="text-muted small">Khu vực làm việc / </span>
+                <span class="fw-semibold text-dark">@ViewData["Title"]</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-rose-subtle text-rose rounded-pill px-3 py-2">
+                    <i class="fas fa-shield-alt me-1"></i> Quản trị viên
+                </span>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-light dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i> @User.Identity?.Name
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                        <li>
+                            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- ALERTS -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show m-3 rounded-3" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show m-3 rounded-3" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- MAIN BODY -->
+        <main class="p-4 flex-grow-1">
+            @RenderBody()
+        </main>
+
+        <footer class="text-center py-3 bg-white border-top text-muted small">
+            &copy; 2024 BeautyStore Admin Dashboard - Clean Architecture & eShopOnWeb Pattern
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.alert-dismissible').forEach(a => {
+                new bootstrap.Alert(a).close();
+            });
+        }, 4000);
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

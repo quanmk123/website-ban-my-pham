@@ -1,0 +1,53 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-rose text-white text-center py-4 border-0">
+                    <div class="mb-2">
+                        <i class="fas fa-user-plus fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">Tạo Tài Khoản</h3>
+                    <p class="mb-0 text-white-50">Nhận ưu đãi độc quyền dành cho thành viên mới</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form asp-controller="Account" asp-action="Register" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium"><i class="fas fa-envelope text-muted me-1"></i> Email</label>
+                            <input type="email" name="email" class="form-control form-control-lg rounded-3 fs-6" placeholder="name@example.com" required autofocus />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium"><i class="fas fa-lock text-muted me-1"></i> Mật khẩu</label>
+                            <input type="password" name="password" class="form-control form-control-lg rounded-3 fs-6" placeholder="Tối thiểu 6 ký tự, gồm số, chữ hoa, ký tự đặc biệt" required />
+                            <div class="form-text small">Ví dụ: <code>P@ssword123</code></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium"><i class="fas fa-check-double text-muted me-1"></i> Xác nhận mật khẩu</label>
+                            <input type="password" name="confirmPassword" class="form-control form-control-lg rounded-3 fs-6" placeholder="Nhập lại mật khẩu" required />
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-rose btn-lg rounded-3 py-2 fw-semibold">
+                                <i class="fas fa-sparkles me-2"></i>Đăng ký ngay
+                            </button>
+                        </div>
+
+                        <div class="text-center pt-2">
+                            <span class="text-muted">Đã có tài khoản?</span>
+                            <a asp-controller="Account" asp-action="Login" class="text-rose fw-semibold text-decoration-none ms-1">Đăng nhập</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

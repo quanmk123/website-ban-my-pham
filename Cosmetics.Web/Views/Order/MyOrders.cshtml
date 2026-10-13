@@ -1,0 +1,56 @@
+@model List<Cosmetics.Web.ViewModels.OrderViewModel>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container py-5">
+    <h2 class="mb-4"><i class="fas fa-receipt text-rose me-2"></i>Đơn hàng của tôi</h2>
+
+    @if (Model.Any())
+    {
+        @foreach (var order in Model)
+        {
+            <div class="order-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <strong>Đơn hàng #@order.Id</strong>
+                        <span class="text-muted ms-3">@order.FormattedDate</span>
+                    </div>
+                    <span class="badge @order.StatusBadgeClass">@order.Status</span>
+                </div>
+                @foreach (var item in order.Items.Take(3))
+                {
+                    <div class="d-flex align-items-center mb-2">
+                        <img src="@item.PictureUri" class="rounded me-3"
+                             style="width:40px;height:40px;object-fit:cover;"
+                             onerror="this.src='/images/placeholder.png'" />
+                        <span class="flex-grow-1">@item.ProductName <small class="text-muted">x@item.Units</small></span>
+                        <span>@item.FormattedSubtotal</span>
+                    </div>
+                }
+                @if (order.Items.Count > 3)
+                {
+                    <small class="text-muted">...và @(order.Items.Count - 3) sản phẩm khác</small>
+                }
+                <hr />
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Tổng: <span class="text-rose">@order.FormattedTotal</span></strong>
+                    <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id"
+                       class="btn btn-outline-rose btn-sm">
+                        <i class="fas fa-eye me-1"></i>Chi tiết
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <p>Bạn chưa có đơn hàng nào.</p>
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-rose mt-3">
+                <i class="fas fa-store me-2"></i>Mua sắm ngay
+            </a>
+        </div>
+    }
+</div>

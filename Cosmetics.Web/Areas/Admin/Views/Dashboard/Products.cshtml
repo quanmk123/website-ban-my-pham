@@ -1,0 +1,169 @@
+@model IReadOnlyList<CatalogItem>
+@{
+    ViewData["Title"] = "Quản lý Sản phẩm";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    string? searchTerm = ViewBag.SearchTerm as string;
+    int totalItems = ViewBag.TotalItems ?? 0;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Danh sách Mỹ phẩm</h3>
+        <p class="text-muted mb-0">Tổng số: <strong>@totalItems</strong> sản phẩm trong kho</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="CreateProduct" class="btn btn-rose rounded-pill px-3 shadow-sm">
+            <i class="fas fa-plus me-1"></i> Thêm sản phẩm
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+    <!-- SEARCH & FILTER TOOLBAR -->
+    <div class="card-body border-bottom bg-light py-3">
+        <form asp-action="Products" method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" name="searchTerm" class="form-control border-start-0" placeholder="Tìm theo tên sản phẩm..." value="@searchTerm" />
+                </div>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-rose rounded-3">Tìm kiếm</button>
+                @if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    <a asp-action="Products" class="btn btn-outline-secondary rounded-3 ms-1">Xóa bộ lọc</a>
+                }
+            </div>
+        </form>
+    </div>
+
+    <!-- PRODUCT TABLE -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 70px;">Ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Thương hiệu / Loại</th>
+                    <th>Đơn giá</th>
+                    <th>Tồn kho</th>
+                    <th>Loại da</th>
+                    <th class="text-end" style="width: 140px;">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(item.PictureUri) ? "/images/placeholder.png" : item.PictureUri)" 
+                                     alt="@item.Name" class="rounded border shadow-sm" style="width: 50px; height: 50px; object-fit: cover;" />
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@item.Name</div>
+                                <small class="text-muted">Dung tích: @(string.IsNullOrEmpty(item.Capacity) ? "N/A" : item.Capacity)</small>
+                            </td>
+                            <td>
+                                <div><span class="badge bg-light text-dark border">@(item.CatalogBrand?.Name ?? "Chưa rõ")</span></div>
+                                <div class="mt-1"><span class="badge bg-light text-muted border">@(item.CatalogType?.Name ?? "Chưa rõ")</span></div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-rose">@item.Price.ToString("N0") ₫</div>
+                                @if (item.OriginalPrice > item.Price)
+                                {
+                                    <small class="text-muted text-decoration-line-through">@item.OriginalPrice.ToString("N0") ₫</small>
+                                }
+                            </td>
+                            <td>
+                                @if (item.StockQuantity <= 0)
+                                {
+                                    <span class="badge bg-secondary">Hết hàng</span>
+                                }
+                                else if (item.StockQuantity < 5)
+                                {
+                                    <span class="badge bg-danger">Còn @item.StockQuantity (Sắp hết)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success-subtle text-success">Còn @item.StockQuantity chiếc</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info border">@(string.IsNullOrEmpty(item.SkinType) ? "Mọi loại da" : item.SkinType)</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="EditProduct" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Xóa" data-bs-toggle="modal" data-bs-target="#deleteModal-@item.Id">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+
+                                <!-- DELETE CONFIRM MODAL -->
+                                <div class="modal fade text-start" id="deleteModal-@item.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header bg-danger text-white border-0">
+                                                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa sản phẩm</h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body py-4">
+                                                Bạn có chắc chắn muốn xóa sản phẩm <strong>@item.Name</strong> khỏi hệ thống không?
+                                            </div>
+                                            <div class="modal-footer border-0">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                                                <form asp-action="DeleteProduct" asp-route-id="@item.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-danger">Xóa vĩnh viễn</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-search fs-1 mb-3 text-muted"></i>
+                            <p class="mb-0">Không tìm thấy sản phẩm nào khớp với tìm kiếm.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    @if (totalPages > 1)
+    {
+        <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center">
+            <small class="text-muted">Trang @currentPage / @totalPages</small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Products" asp-route-page="@(currentPage - 1)" asp-route-searchTerm="@searchTerm">Trước</a>
+                    </li>
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Products" asp-route-page="@p" asp-route-searchTerm="@searchTerm">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Products" asp-route-page="@(currentPage + 1)" asp-route-searchTerm="@searchTerm">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>

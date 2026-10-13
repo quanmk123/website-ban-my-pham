@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Cosmetics.ApplicationCore/Cosmetics.ApplicationCore.csproj" />
+  <Project Path="Cosmetics.Infrastructure/Cosmetics.Infrastructure.csproj" />
+  <Project Path="Cosmetics.Web/Cosmetics.Web.csproj" />
+  <Project Path="Cosmetics.UnitTests/Cosmetics.UnitTests.csproj" />
+</Solution>

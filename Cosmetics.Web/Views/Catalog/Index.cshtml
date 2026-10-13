@@ -1,0 +1,201 @@
+@model Cosmetics.Web.ViewModels.CatalogIndexViewModel
+@{
+    ViewData["Title"] = "Sản phẩm mỹ phẩm";
+}
+
+<!-- HERO BANNER -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1>Mỹ Phẩm Chính Hãng<br /><span class="text-rose">Chăm Sóc Làn Da Bạn</span></h1>
+                <p>Khám phá hàng ngàn sản phẩm làm đẹp từ các thương hiệu hàng đầu thế giới: La Roche-Posay, Innisfree, CeraVe, MAC, Anessa, Klairs...</p>
+                <a class="btn btn-rose btn-lg mt-3" href="#products">
+                    <i class="fas fa-sparkles me-2"></i>Khám phá ngay
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRODUCTS SECTION -->
+<section id="products" class="container py-5">
+    <div class="row">
+        <!-- FILTER SIDEBAR -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-section">
+                <h5 class="mb-3"><i class="fas fa-sliders-h me-2 text-rose"></i>Bộ lọc</h5>
+                <form asp-controller="Catalog" asp-action="Index" method="get">
+                    <div class="mb-3">
+                        <h6>Thương hiệu</h6>
+                        <select name="brandId" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            @foreach (var brand in Model.Brands)
+                            {
+                                <option value="@brand.Value" selected="@brand.Selected">@brand.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Danh mục</h6>
+                        <select name="typeId" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            @foreach (var type in Model.Types)
+                            {
+                                <option value="@type.Value" selected="@type.Selected">@type.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Loại da</h6>
+                        <select name="skinType" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            @foreach (var st in Model.SkinTypes)
+                            {
+                                <option value="@st" selected="@(Model.SkinTypeFilterApplied == st)">@st</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <h6>Khoảng giá (VNĐ)</h6>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" name="minPrice" class="form-control" placeholder="Từ" value="@Model.MinPrice" />
+                            </div>
+                            <div class="col-6">
+                                <input type="number" name="maxPrice" class="form-control" placeholder="Đến" value="@Model.MaxPrice" />
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="searchTerm" value="@Model.SearchTerm" />
+                    <button type="submit" class="btn btn-rose w-100">
+                        <i class="fas fa-filter me-2"></i>Áp dụng
+                    </button>
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary w-100 mt-2 btn-sm">
+                        <i class="fas fa-times me-1"></i>Xóa bộ lọc
+                    </a>
+                </form>
+            </div>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="col-lg-9">
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            {
+                <div class="mb-3">
+                    <span class="text-muted">Kết quả tìm kiếm cho: </span>
+                    <strong class="text-rose">"@Model.SearchTerm"</strong>
+                    <span class="text-muted ms-2">(@Model.PaginationInfo.TotalItems sản phẩm)</span>
+                </div>
+            }
+
+            @if (Model.Items.Any())
+            {
+                <div class="row g-4">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="product-card">
+                                <a asp-controller="Catalog" asp-action="Details" asp-route-id="@item.Id">
+                                    <div class="card-img-container">
+                                        @if (item.IsOnSale)
+                                        {
+                                            <span class="discount-badge">-@item.DiscountPercent%</span>
+                                        }
+                                        <span class="brand-tag">@item.BrandName</span>
+                                        <img src="@item.PictureUri" alt="@item.Name"
+                                             onerror="this.src='/images/placeholder.png'" />
+                                    </div>
+                                </a>
+                                <div class="card-body">
+                                    <span class="product-meta">@item.TypeName • @item.Capacity</span>
+                                    <a asp-controller="Catalog" asp-action="Details" asp-route-id="@item.Id"
+                                       class="product-name text-decoration-none">@item.Name</a>
+                                    <div class="price-section">
+                                        <span class="current-price">@item.FormattedPrice</span>
+                                        @if (item.IsOnSale)
+                                        {
+                                            <span class="original-price">@item.FormattedOriginalPrice</span>
+                                        }
+                                    </div>
+                                    @if (item.StockQuantity > 0)
+                                    {
+                                        <form asp-controller="Basket" asp-action="AddToBasket" method="post">
+                                            <input type="hidden" name="catalogItemId" value="@item.Id" />
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-add-cart">
+                                                <i class="fas fa-shopping-bag me-2"></i>Thêm vào giỏ
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-add-cart" disabled style="opacity:0.5;">
+                                            <i class="fas fa-times-circle me-2"></i>Hết hàng
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- PAGINATION -->
+                @if (Model.PaginationInfo.TotalPages > 1)
+                {
+                    <nav class="mt-5 d-flex justify-content-center">
+                        <ul class="pagination">
+                            @if (Model.PaginationInfo.HasPreviousPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-controller="Catalog" asp-action="Index"
+                                       asp-route-page="@(Model.PaginationInfo.CurrentPage - 1)"
+                                       asp-route-brandId="@Model.BrandFilterApplied"
+                                       asp-route-typeId="@Model.TypeFilterApplied"
+                                       asp-route-skinType="@Model.SkinTypeFilterApplied"
+                                       asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            }
+                            @for (int i = 1; i <= Model.PaginationInfo.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PaginationInfo.CurrentPage ? "active" : "")">
+                                    <a class="page-link" asp-controller="Catalog" asp-action="Index"
+                                       asp-route-page="@i"
+                                       asp-route-brandId="@Model.BrandFilterApplied"
+                                       asp-route-typeId="@Model.TypeFilterApplied"
+                                       asp-route-skinType="@Model.SkinTypeFilterApplied"
+                                       asp-route-searchTerm="@Model.SearchTerm">@i</a>
+                                </li>
+                            }
+                            @if (Model.PaginationInfo.HasNextPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-controller="Catalog" asp-action="Index"
+                                       asp-route-page="@(Model.PaginationInfo.CurrentPage + 1)"
+                                       asp-route-brandId="@Model.BrandFilterApplied"
+                                       asp-route-typeId="@Model.TypeFilterApplied"
+                                       asp-route-skinType="@Model.SkinTypeFilterApplied"
+                                       asp-route-searchTerm="@Model.SearchTerm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <p>Không tìm thấy sản phẩm phù hợp.</p>
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-rose mt-3">
+                        Xem tất cả sản phẩm
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>

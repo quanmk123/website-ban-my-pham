@@ -1,0 +1,117 @@
+@model IReadOnlyList<Order>
+@{
+    ViewData["Title"] = "Quản lý Đơn hàng";
+    string? statusFilter = ViewBag.StatusFilter as string;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Quản lý Đơn hàng</h3>
+        <p class="text-muted mb-0">Theo dõi tiến độ xử lý và giao hàng cho khách</p>
+    </div>
+</div>
+
+<!-- STATUS FILTER PILLS -->
+<div class="mb-4">
+    <div class="btn-group flex-wrap shadow-sm rounded-pill overflow-hidden bg-white p-1" role="group">
+        <a asp-action="Orders" class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(statusFilter) ? "btn-rose text-white" : "btn-light text-dark")">
+            Tất cả (@Model?.Count)
+        </a>
+        <a asp-action="Orders" asp-route-status="Pending" class="btn btn-sm rounded-pill px-3 @(statusFilter == "Pending" ? "btn-warning text-dark" : "btn-light text-dark")">
+            Chờ xác nhận
+        </a>
+        <a asp-action="Orders" asp-route-status="Confirmed" class="btn btn-sm rounded-pill px-3 @(statusFilter == "Confirmed" ? "btn-info text-white" : "btn-light text-dark")">
+            Đã xác nhận
+        </a>
+        <a asp-action="Orders" asp-route-status="Shipping" class="btn btn-sm rounded-pill px-3 @(statusFilter == "Shipping" ? "btn-primary text-white" : "btn-light text-dark")">
+            Đang giao hàng
+        </a>
+        <a asp-action="Orders" asp-route-status="Completed" class="btn btn-sm rounded-pill px-3 @(statusFilter == "Completed" ? "btn-success text-white" : "btn-light text-dark")">
+            Hoàn thành
+        </a>
+        <a asp-action="Orders" asp-route-status="Cancelled" class="btn btn-sm rounded-pill px-3 @(statusFilter == "Cancelled" ? "btn-danger text-white" : "btn-light text-dark")">
+            Đã hủy
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã Đơn</th>
+                    <th>Thời gian đặt</th>
+                    <th>Người nhận</th>
+                    <th>Phương thức</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        var statusBadge = order.Status switch
+                        {
+                            OrderStatus.Pending => "bg-warning text-dark",
+                            OrderStatus.Confirmed => "bg-info text-white",
+                            OrderStatus.Shipping => "bg-primary text-white",
+                            OrderStatus.Completed => "bg-success text-white",
+                            OrderStatus.Cancelled => "bg-danger text-white",
+                            _ => "bg-secondary text-white"
+                        };
+                        var statusName = order.Status switch
+                        {
+                            OrderStatus.Pending => "Chờ xác nhận",
+                            OrderStatus.Confirmed => "Đã xác nhận",
+                            OrderStatus.Shipping => "Đang giao",
+                            OrderStatus.Completed => "Hoàn thành",
+                            OrderStatus.Cancelled => "Đã hủy",
+                            _ => "Khác"
+                        };
+
+                        <tr>
+                            <td>
+                                <strong class="text-rose">#@order.Id</strong>
+                            </td>
+                            <td>
+                                <div class="small fw-semibold">@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy")</div>
+                                <div class="text-muted small">@order.OrderDate.ToLocalTime().ToString("HH:mm")</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@order.ShipToAddress.ReceiverName</div>
+                                <div class="text-muted small"><i class="fas fa-phone me-1"></i>@order.ShipToAddress.PhoneNumber</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@order.PaymentMethod</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark">@order.TotalPrice.ToString("N0") ₫</strong>
+                            </td>
+                            <td>
+                                <span class="badge @statusBadge rounded-pill px-3 py-2">@statusName</span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="OrderDetail" asp-route-id="@order.Id" class="btn btn-sm btn-outline-rose rounded-pill px-3">
+                                    Chi tiết <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-inbox fs-1 mb-3 text-muted"></i>
+                            <p class="mb-0">Chưa có đơn hàng nào trong mục này.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

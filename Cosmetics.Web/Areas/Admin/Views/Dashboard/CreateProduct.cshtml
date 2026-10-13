@@ -1,0 +1,127 @@
+@model CatalogItem
+@{
+    ViewData["Title"] = "Thêm mới Sản phẩm Mỹ phẩm";
+    var brands = ViewBag.Brands as IReadOnlyList<CatalogBrand> ?? new List<CatalogBrand>();
+    var types = ViewBag.Types as IReadOnlyList<CatalogType> ?? new List<CatalogType>();
+}
+
+<div class="mb-4">
+    <a asp-action="Products" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+        <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h4 class="fw-bold mb-0 text-dark"><i class="fas fa-plus-circle text-rose me-2"></i>Thêm sản phẩm mới</h4>
+    </div>
+    <div class="card-body p-4">
+        <form asp-action="CreateProduct" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="alert alert-danger rounded-3" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+            <div class="row g-4">
+                <!-- THÔNG TIN CƠ BẢN -->
+                <div class="col-lg-8">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fas fa-info-circle text-muted me-2"></i>Thông tin chung</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên sản phẩm mỹ phẩm <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control rounded-3" placeholder="Ví dụ: Nước Tẩy Trang La Roche-Posay Micellar Water Ultra" required />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mô tả chi tiết sản phẩm</label>
+                        <textarea asp-for="Description" class="form-control rounded-3" rows="4" placeholder="Công dụng, đặc tính nổi bật, trải nghiệm sử dụng..."></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Thành phần chính</label>
+                            <input asp-for="Ingredients" class="form-control rounded-3" placeholder="Ví dụ: Niacinamide, B5, Hyaluronic Acid, Kẽm PCA" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Hạn sử dụng / Lưu ý</label>
+                            <input asp-for="ExpiryNotice" class="form-control rounded-3" placeholder="36 tháng kể từ NSX, 12 tháng sau mở nắp" />
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Loại da phù hợp</label>
+                            <select asp-for="SkinType" class="form-select rounded-3">
+                                <option value="">Mọi loại da</option>
+                                <option value="Da dầu, mụn">Da dầu, mụn</option>
+                                <option value="Da khô, thiếu ẩm">Da khô, thiếu ẩm</option>
+                                <option value="Da nhạy cảm">Da nhạy cảm</option>
+                                <option value="Da hỗn hợp">Da hỗn hợp</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Dung tích / Trọng lượng</label>
+                            <input asp-for="Capacity" class="form-control rounded-3" placeholder="Ví dụ: 50ml, 100ml, 30g, 3.5g" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GIÁ CẢ & PHÂN LOẠI -->
+                <div class="col-lg-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="fas fa-tag text-muted me-2"></i>Phân loại & Giá</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Thương hiệu <span class="text-danger">*</span></label>
+                        <select asp-for="CatalogBrandId" class="form-select rounded-3" required>
+                            <option value="">-- Chọn thương hiệu --</option>
+                            @foreach (var brand in brands)
+                            {
+                                <option value="@brand.Id">@brand.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Danh mục loại <span class="text-danger">*</span></label>
+                        <select asp-for="CatalogTypeId" class="form-select rounded-3" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach (var type in types)
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Giá bán thực tế (VNĐ) <span class="text-danger">*</span></label>
+                        <input asp-for="Price" type="number" step="1000" class="form-control rounded-3" placeholder="350000" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Giá gốc (niêm yết nếu có giảm giá)</label>
+                        <input asp-for="OriginalPrice" type="number" step="1000" class="form-control rounded-3" placeholder="420000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Số lượng trong kho <span class="text-danger">*</span></label>
+                        <input asp-for="StockQuantity" type="number" class="form-control rounded-3" value="50" required />
+                    </div>
+
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Hình ảnh sản phẩm</label>
+                        <input type="file" name="imageFile" class="form-control rounded-3 mb-2" accept="image/*" />
+                        <label class="form-label small text-muted">Hoặc URL hình ảnh có sẵn:</label>
+                        <input asp-for="PictureUri" class="form-control form-control-sm rounded-3" placeholder="/images/products/example.jpg" />
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-rose btn-lg rounded-3 fw-semibold">
+                            <i class="fas fa-save me-2"></i>Lưu sản phẩm
+                        </button>
+                        <a asp-action="Products" class="btn btn-outline-secondary rounded-3">Hủy bỏ</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
