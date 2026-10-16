@@ -1,13 +1,25 @@
-## Ignore Visual Studio / .NET build artifacts
+## Build and compiled artifacts
 [Bb]in/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+TestResults/
+
+## Visual Studio & IDE artifacts
 .vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+
+## Database files (Sinh tự động bởi EF Core LocalDB)
+*.mdf
+*.ldf
 
 ## OS artifacts
 Thumbs.db
