@@ -1,8 +1,4 @@
-# ĐỒ ÁN TỐT NGHIỆP / ĐỒ ÁN MÔN HỌC
 # WEBSITE THƯƠNG MẠI ĐIỆN TỬ BÁN MỸ PHẨM (BEAUTY COSMETICS STORE)
-
-> **Kiến trúc tham chiếu:** Microsoft eShopOnWeb Reference Architecture  
-> **Phong cách kiến trúc:** Clean Architecture (Onion Architecture), Domain-Driven Design (DDD) Lite, Repository Pattern, Specification Pattern.
 
 ---
 
