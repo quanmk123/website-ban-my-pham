@@ -95,13 +95,14 @@ public class BasketController : Controller
         return RedirectToAction("Index");
     }
 
-    [HttpPost]
+    [HttpPost, HttpGet]
     public async Task<IActionResult> RemoveItem(int basketItemId)
     {
         var buyerId = GetOrSetBasketCookie();
         var basket = await _basketService.GetOrCreateBasketAsync(buyerId);
         var quantities = new Dictionary<int, int> { { basketItemId, 0 } };
         await _basketService.SetQuantitiesAsync(basket.Id, quantities);
+        TempData["Success"] = "Đã xóa sản phẩm khỏi giỏ hàng thành công!";
         return RedirectToAction("Index");
     }
 

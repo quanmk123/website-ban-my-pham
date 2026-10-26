@@ -80,6 +80,15 @@ public class DashboardController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProduct(CatalogItem item, IFormFile? imageFile)
     {
+        ModelState.Remove(nameof(item.CatalogBrand));
+        ModelState.Remove(nameof(item.CatalogType));
+        if (string.IsNullOrWhiteSpace(item.SkinType))
+        {
+            item.SkinType = "Mọi loại da";
+        }
+        ModelState.Remove(nameof(item.SkinType));
+        ModelState.Remove(nameof(item.PictureUri));
+
         if (ModelState.IsValid)
         {
             if (imageFile != null && imageFile.Length > 0)
@@ -90,6 +99,10 @@ public class DashboardController : Controller
                 using var stream = new FileStream(filePath, FileMode.Create);
                 await imageFile.CopyToAsync(stream);
                 item.PictureUri = $"/images/products/{fileName}";
+            }
+            else if (string.IsNullOrEmpty(item.PictureUri))
+            {
+                item.PictureUri = "/images/placeholder.png";
             }
 
             await _itemRepository.AddAsync(item);
@@ -117,8 +130,32 @@ public class DashboardController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditProduct(CatalogItem item, IFormFile? imageFile)
     {
+        ModelState.Remove(nameof(item.CatalogBrand));
+        ModelState.Remove(nameof(item.CatalogType));
+        if (string.IsNullOrWhiteSpace(item.SkinType))
+        {
+            item.SkinType = "Mọi loại da";
+        }
+        ModelState.Remove(nameof(item.SkinType));
+        ModelState.Remove(nameof(item.PictureUri));
+
         if (ModelState.IsValid)
         {
+            var existingItem = await _itemRepository.GetByIdAsync(item.Id);
+            if (existingItem == null) return NotFound();
+
+            existingItem.Name = item.Name;
+            existingItem.Description = item.Description ?? string.Empty;
+            existingItem.Price = item.Price;
+            existingItem.OriginalPrice = item.OriginalPrice;
+            existingItem.Capacity = item.Capacity ?? string.Empty;
+            existingItem.SkinType = item.SkinType ?? "Mọi loại da";
+            existingItem.Ingredients = item.Ingredients ?? string.Empty;
+            existingItem.ExpiryNotice = item.ExpiryNotice ?? string.Empty;
+            existingItem.StockQuantity = item.StockQuantity;
+            existingItem.CatalogBrandId = item.CatalogBrandId;
+            existingItem.CatalogTypeId = item.CatalogTypeId;
+
             if (imageFile != null && imageFile.Length > 0)
             {
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
@@ -126,10 +163,14 @@ public class DashboardController : Controller
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
                 using var stream = new FileStream(filePath, FileMode.Create);
                 await imageFile.CopyToAsync(stream);
-                item.PictureUri = $"/images/products/{fileName}";
+                existingItem.PictureUri = $"/images/products/{fileName}";
+            }
+            else if (!string.IsNullOrEmpty(item.PictureUri))
+            {
+                existingItem.PictureUri = item.PictureUri;
             }
 
-            await _itemRepository.UpdateAsync(item);
+            await _itemRepository.UpdateAsync(existingItem);
             TempData["Success"] = "Cập nhật sản phẩm thành công!";
             return RedirectToAction("Products");
         }

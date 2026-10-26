@@ -32,13 +32,10 @@
                                 <div class="ms-3 text-end" style="min-width:120px;">
                                     <strong>@item.FormattedSubtotal</strong>
                                 </div>
-                                <form asp-controller="Basket" asp-action="RemoveItem" method="post" class="ms-2">
-                                    <input type="hidden" name="basketItemId" value="@item.Id" />
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                <a asp-controller="Basket" asp-action="RemoveItem" asp-route-basketItemId="@item.Id"
+                                   class="btn btn-sm btn-outline-danger border-0 ms-2" title="Xóa khỏi giỏ hàng">
+                                    <i class="fas fa-trash"></i>
+                                </a>
                             </div>
                         }
                         <div class="mt-3">
