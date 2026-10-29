@@ -16,13 +16,6 @@
                     <p class="mb-0 text-white-50">Chào mừng bạn quay trở lại với BeautyStore</p>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <!-- Helper Box for Grading/Demo -->
-                    <div class="alert alert-light border mb-4 rounded-3 p-3 text-muted small">
-                        <div class="fw-semibold text-dark mb-1"><i class="fas fa-info-circle text-rose me-1"></i> Tài khoản mẫu dùng thử:</div>
-                        <div><strong>Admin:</strong> <code>admin@beauty.com</code> / <code>P@ssword123</code></div>
-                        <div><strong>Khách hàng:</strong> <code>customer@beauty.com</code> / <code>P@ssword123</code></div>
-                    </div>
-
                     <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="All" class="text-danger small mb-3"></div>
