@@ -62,7 +62,7 @@
                                     <span class="fw-semibold text-dark">@item.ProductName</span>
                                 </td>
                                 <td class="text-center">@item.UnitPrice.ToString("N0") ₫</td>
-                                <td class="text-center"><span class="badge bg-light text-dark border">x@item.Units</span></td>
+                                <td class="text-center"><span class="badge bg-light text-dark border px-2 py-1">@item.Units</span></td>
                                 <td class="text-end fw-bold text-rose">@((item.UnitPrice * item.Units).ToString("N0")) ₫</td>
                             </tr>
                         }

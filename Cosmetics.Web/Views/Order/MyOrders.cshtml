@@ -24,7 +24,7 @@
                         <img src="@item.PictureUri" class="rounded me-3"
                              style="width:40px;height:40px;object-fit:cover;"
                              onerror="this.src='/images/placeholder.png'" />
-                        <span class="flex-grow-1">@item.ProductName <small class="text-muted">x@item.Units</small></span>
+                        <span class="flex-grow-1">@item.ProductName <small class="text-muted">x@(item.Units)</small></span>
                         <span>@item.FormattedSubtotal</span>
                     </div>
                 }
