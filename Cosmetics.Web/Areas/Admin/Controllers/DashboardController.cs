@@ -34,7 +34,8 @@ public class DashboardController : Controller
     public async Task<IActionResult> Index()
     {
         var items = await _itemRepository.ListAllAsync();
-        var orders = await _orderRepository.ListAllAsync();
+        var spec = new OrderWithItemsSpecification();
+        var orders = await _orderRepository.ListAsync(spec);
 
         ViewBag.TotalProducts = items.Count;
         ViewBag.LowStockProducts = items.Count(i => i.StockQuantity < 5);
@@ -240,7 +241,8 @@ public class DashboardController : Controller
     // === QUẢN LÝ ĐƠN HÀNG ===
     public async Task<IActionResult> Orders(string? status)
     {
-        var allOrders = await _orderRepository.ListAllAsync();
+        var spec = new OrderWithItemsSpecification();
+        var allOrders = await _orderRepository.ListAsync(spec);
 
         if (!string.IsNullOrEmpty(status) && Enum.TryParse<OrderStatus>(status, out var statusEnum))
         {
