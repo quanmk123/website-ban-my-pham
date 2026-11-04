@@ -230,9 +230,15 @@ public partial class MainWindow : Window
         FilterCatalogProducts();
     }
 
-    private void BtnAddProduct_Click(object sender, RoutedEventArgs e)
+    private async void BtnAddProduct_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("Chức năng thêm mới sản phẩm đang sẵn sàng. Bạn có thể thêm trực tiếp thông qua form hoặc nạp tự động từ CSDL!", "Thông Báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        var dialog = new AddProductWindow { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            await LoadDataAsync();
+            MessageBox.Show("Thêm sản phẩm mới thành công! Dữ liệu đã được cập nhật vào kho hàng, quầy POS và thống kê.", 
+                            "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
     }
 
     // ================= 4. XỬ LÝ QUẢN LÝ ĐƠN HÀNG =================

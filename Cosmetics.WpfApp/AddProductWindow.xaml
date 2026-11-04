@@ -1,0 +1,147 @@
+<Window x:Class="Cosmetics.WpfApp.AddProductWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Thêm Sản Phẩm Mỹ Phẩm Mới - BeautyStore"
+        Height="680" Width="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F8F9FD"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#D4788C"/>
+        <SolidColorBrush x:Key="BorderBrushColor" Color="#E2E8F0"/>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,4,0,12"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,4,0,12"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#4A5568"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- TIÊU ĐỀ -->
+        <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="0,0,0,15" Margin="0,0,0,15">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🌸" FontSize="20" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Thêm Mỹ Phẩm Mới" FontSize="18" FontWeight="Bold" Foreground="#1E1E2F"/>
+                </StackPanel>
+                <TextBlock Text="Nhập thông tin sản phẩm để lưu vào CSDL và kho hàng" FontSize="11" Foreground="#718096" FontWeight="Normal" Margin="28,2,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- CÁC TRƯỜNG NHẬP LIỆU -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="0,0,10,0">
+                <TextBlock Text="Tên sản phẩm mỹ phẩm (*):"/>
+                <TextBox x:Name="TxtName" ToolTip="Ví dụ: Kem dưỡng ẩm phục hồi da CeraVe"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Thương hiệu (*):"/>
+                        <ComboBox x:Name="CboBrand" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="Danh mục loại (*):"/>
+                        <ComboBox x:Name="CboType" DisplayMemberPath="Name" SelectedValuePath="Id"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Giá bán thực tế (VNĐ) (*):"/>
+                        <TextBox x:Name="TxtPrice" Text="350000" ToolTip="Nhập số tiền VNĐ"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="Giá gốc niêm yết (VNĐ):"/>
+                        <TextBox x:Name="TxtOriginalPrice" Text="420000" ToolTip="Giá trước khi giảm (nếu có)"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                        <TextBlock Text="Số lượng tồn kho ban đầu (*):"/>
+                        <TextBox x:Name="TxtStockQuantity" Text="50" ToolTip="Số lượng nhập kho"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="Dung tích / Trọng lượng:"/>
+                        <TextBox x:Name="TxtCapacity" Text="50ml" ToolTip="Ví dụ: 50ml, 30ml, 3.5g"/>
+                    </StackPanel>
+                </Grid>
+
+                <TextBlock Text="Loại da phù hợp:"/>
+                <ComboBox x:Name="CboSkinType">
+                    <ComboBoxItem Content="Mọi loại da" IsSelected="True"/>
+                    <ComboBoxItem Content="Da dầu, mụn"/>
+                    <ComboBoxItem Content="Da khô, thiếu ẩm"/>
+                    <ComboBoxItem Content="Da nhạy cảm"/>
+                    <ComboBoxItem Content="Da hỗn hợp"/>
+                </ComboBox>
+
+                <TextBlock Text="Mô tả sản phẩm:"/>
+                <TextBox x:Name="TxtDescription" Height="65" AcceptsReturn="True" TextWrapping="Wrap" 
+                         VerticalScrollBarVisibility="Auto" ToolTip="Mô tả công dụng sản phẩm"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- NÚT BẤM LƯU / HỦY -->
+        <Border Grid.Row="2" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Padding="0,15,0,0" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="140"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="1" Content="Hủy bỏ" Click="BtnCancel_Click" 
+                        Background="#EDF2F7" Foreground="#4A5568" FontWeight="SemiBold" 
+                        BorderThickness="0" Padding="12,10" Margin="0,0,10,0" Cursor="Hand"/>
+
+                <Button Grid.Column="2" Content="💾 Lưu Sản Phẩm" Click="BtnSave_Click" 
+                        Background="{StaticResource PrimaryBrush}" Foreground="#FFFFFF" FontWeight="Bold" 
+                        BorderThickness="0" Padding="12,10" Cursor="Hand"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
