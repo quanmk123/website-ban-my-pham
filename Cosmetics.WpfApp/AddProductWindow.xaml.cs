@@ -123,3 +123,4 @@ public partial class AddProductWindow : Window
         Close();
     }
 }
+

@@ -353,25 +353,48 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox Grid.Column="0" x:Name="TxtProductFilter" Padding="10,8" FontSize="14" 
                                          TextChanged="TxtProductFilter_TextChanged" ToolTip="Tìm sản phẩm trong kho..."/>
-                                <Button Grid.Column="1" Content="➕ Thêm Sản Phẩm Mới" Click="BtnAddProduct_Click" 
+                                <Button Grid.Column="1" Content="➕ Thêm Mới" Click="BtnAddProduct_Click" 
                                         Background="{StaticResource PrimaryBrush}" Foreground="#FFFFFF" FontWeight="Bold" 
-                                        Padding="15,8" Margin="10,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                        Padding="12,8" Margin="8,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                <Button Grid.Column="2" Content="✏️ Sửa" Click="BtnEditSelectedProduct_Click" 
+                                        Background="#4F46E5" Foreground="#FFFFFF" FontWeight="Bold" 
+                                        Padding="12,8" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                <Button Grid.Column="3" Content="🗑️ Xóa" Click="BtnDeleteSelectedProduct_Click" 
+                                        Background="#EF4444" Foreground="#FFFFFF" FontWeight="Bold" 
+                                        Padding="12,8" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
                             </Grid>
 
                             <DataGrid Grid.Row="1" x:Name="DgProducts" AutoGenerateColumns="False" IsReadOnly="True"
+                                      MouseDoubleClick="DgProducts_MouseDoubleClick"
                                       GridLinesVisibility="Horizontal" BorderThickness="0" Background="Transparent">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                                     <DataGridTextColumn Header="Tên Mỹ Phẩm" Binding="{Binding Name}" Width="*"/>
-                                    <DataGridTextColumn Header="Thương Hiệu" Binding="{Binding CatalogBrand.Name}" Width="120"/>
-                                    <DataGridTextColumn Header="Loại Sản Phẩm" Binding="{Binding CatalogType.Name}" Width="120"/>
-                                    <DataGridTextColumn Header="Giá Bán (VNĐ)" Binding="{Binding Price, StringFormat={}{0:N0} ₫}" Width="120"/>
-                                    <DataGridTextColumn Header="Giá Gốc (VNĐ)" Binding="{Binding OriginalPrice, StringFormat={}{0:N0} ₫}" Width="120"/>
-                                    <DataGridTextColumn Header="Tồn Kho" Binding="{Binding StockQuantity}" Width="80"/>
-                                    <DataGridTextColumn Header="Loại Da" Binding="{Binding SkinType}" Width="120"/>
+                                    <DataGridTextColumn Header="Thương Hiệu" Binding="{Binding CatalogBrand.Name}" Width="110"/>
+                                    <DataGridTextColumn Header="Loại Sản Phẩm" Binding="{Binding CatalogType.Name}" Width="110"/>
+                                    <DataGridTextColumn Header="Giá Bán (VNĐ)" Binding="{Binding Price, StringFormat={}{0:N0} ₫}" Width="110"/>
+                                    <DataGridTextColumn Header="Giá Gốc (VNĐ)" Binding="{Binding OriginalPrice, StringFormat={}{0:N0} ₫}" Width="110"/>
+                                    <DataGridTextColumn Header="Tồn Kho" Binding="{Binding StockQuantity}" Width="75"/>
+                                    <DataGridTextColumn Header="Loại Da" Binding="{Binding SkinType}" Width="100"/>
+                                    <DataGridTemplateColumn Header="Thao Tác" Width="130">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <Button Content="✏️ Sửa" Click="BtnRowEditProduct_Click" Tag="{Binding Id}"
+                                                            Background="#EEF2FF" Foreground="#4F46E5" FontWeight="SemiBold" 
+                                                            BorderThickness="0" Padding="6,3" Margin="0,0,5,0" Cursor="Hand"/>
+                                                    <Button Content="🗑️ Xóa" Click="BtnRowDeleteProduct_Click" Tag="{Binding Id}"
+                                                            Background="#FEF2F2" Foreground="#EF4444" FontWeight="SemiBold" 
+                                                            BorderThickness="0" Padding="6,3" Cursor="Hand"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
@@ -388,9 +411,18 @@
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0" Margin="0,0,0,15">
-                                <StackPanel Orientation="Horizontal">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
                                     <TextBlock Text="Lọc trạng thái: " VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
-                                    <ComboBox x:Name="CboOrderStatusFilter" Width="180" Padding="8,5" SelectionChanged="CboOrderStatusFilter_SelectionChanged">
+                                    <ComboBox x:Name="CboOrderStatusFilter" Width="170" Padding="8,5" SelectionChanged="CboOrderStatusFilter_SelectionChanged">
                                         <ComboBoxItem Content="-- Tất cả đơn --" IsSelected="True"/>
                                         <ComboBoxItem Content="Hoàn thành (Completed)"/>
                                         <ComboBoxItem Content="Chờ xác nhận (Pending)"/>
@@ -398,9 +430,19 @@
                                         <ComboBoxItem Content="Đã hủy (Cancelled)"/>
                                     </ComboBox>
                                 </StackPanel>
+
+                                <Button Grid.Column="2" Content="👁️ Chi Tiết &amp; Duyệt Đơn" Click="BtnViewOrderDetail_Click"
+                                        Background="#4F46E5" Foreground="#FFFFFF" FontWeight="Bold" Padding="12,7" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                <Button Grid.Column="3" Content="🚚 Giao Hàng" Click="BtnQuickShipping_Click"
+                                        Background="#F59E0B" Foreground="#FFFFFF" FontWeight="Bold" Padding="12,7" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                <Button Grid.Column="4" Content="✅ Hoàn Thành" Click="BtnQuickComplete_Click"
+                                        Background="#10B981" Foreground="#FFFFFF" FontWeight="Bold" Padding="12,7" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                                <Button Grid.Column="5" Content="❌ Hủy Đơn" Click="BtnQuickCancel_Click"
+                                        Background="#EF4444" Foreground="#FFFFFF" FontWeight="Bold" Padding="12,7" Margin="6,0,0,0" BorderThickness="0" Cursor="Hand"/>
                             </Grid>
 
                             <DataGrid Grid.Row="1" x:Name="DgOrders" AutoGenerateColumns="False" IsReadOnly="True"
+                                      MouseDoubleClick="DgOrders_MouseDoubleClick"
                                       GridLinesVisibility="Horizontal" BorderThickness="0" Background="Transparent">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Mã Đơn" Binding="{Binding Id}" Width="80"/>

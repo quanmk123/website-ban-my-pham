@@ -241,6 +241,114 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void OpenEditProduct(int productId)
+    {
+        var dialog = new EditProductWindow(productId) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            await LoadDataAsync();
+            MessageBox.Show("Cập nhật thông tin sản phẩm thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void DgProducts_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (DgProducts.SelectedItem is CatalogItem selected)
+        {
+            OpenEditProduct(selected.Id);
+        }
+    }
+
+    private void BtnEditSelectedProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (DgProducts.SelectedItem is CatalogItem selected)
+        {
+            OpenEditProduct(selected.Id);
+        }
+        else
+        {
+            MessageBox.Show("Vui lòng chọn 1 sản phẩm trên bảng để chỉnh sửa!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private void BtnRowEditProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is int productId)
+        {
+            OpenEditProduct(productId);
+        }
+    }
+
+    private async Task DeleteProductAsync(int productId, string productName)
+    {
+        var confirm = MessageBox.Show($"Bạn có chắc chắn muốn xóa sản phẩm:\n\"{productName}\" (Mã ID: #{productId})?", 
+                                      "Xác nhận xóa sản phẩm", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.Yes) return;
+
+        try
+        {
+            using var scope = App.ServiceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<CatalogContext>();
+
+            // Kiểm tra xem sản phẩm có nằm trong đơn hàng nào không
+            bool hasOrders = await context.OrderItems.AnyAsync(oi => oi.CatalogItemId == productId);
+            if (hasOrders)
+            {
+                var choice = MessageBox.Show(
+                    $"Sản phẩm '{productName}' đã phát sinh đơn hàng trong quá khứ nên không thể xóa vật lý để đảm bảo toàn vẹn dữ liệu kế toán.\n\nBạn có muốn chuyển số lượng tồn kho về 0 (ngừng kinh doanh) không?",
+                    "Bảo vệ dữ liệu", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (choice == MessageBoxResult.Yes)
+                {
+                    var item = await context.CatalogItems.FindAsync(productId);
+                    if (item != null)
+                    {
+                        item.StockQuantity = 0;
+                        await context.SaveChangesAsync();
+                        await LoadDataAsync();
+                        MessageBox.Show("Đã cập nhật tồn kho về 0 thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                return;
+            }
+
+            var productToDelete = await context.CatalogItems.FindAsync(productId);
+            if (productToDelete != null)
+            {
+                context.CatalogItems.Remove(productToDelete);
+                await context.SaveChangesAsync();
+                await LoadDataAsync();
+                MessageBox.Show($"Đã xóa vĩnh viễn sản phẩm '{productName}' khỏi kho hàng!", "Xóa thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi xóa sản phẩm: {ex.Message}", "Lỗi CSDL", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void BtnDeleteSelectedProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (DgProducts.SelectedItem is CatalogItem selected)
+        {
+            await DeleteProductAsync(selected.Id, selected.Name);
+        }
+        else
+        {
+            MessageBox.Show("Vui lòng chọn 1 sản phẩm trên bảng để xóa!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private async void BtnRowDeleteProduct_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is int productId)
+        {
+            var product = _allProducts.FirstOrDefault(p => p.Id == productId);
+            string name = product?.Name ?? $"#{productId}";
+            await DeleteProductAsync(productId, name);
+        }
+    }
+
     // ================= 4. XỬ LÝ QUẢN LÝ ĐƠN HÀNG =================
     private void FilterOrders()
     {
@@ -263,6 +371,78 @@ public partial class MainWindow : Window
     private void CboOrderStatusFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         FilterOrders();
+    }
+
+    private async void OpenOrderDetail(int orderId)
+    {
+        var dialog = new OrderDetailWindow(orderId) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            await LoadDataAsync();
+        }
+    }
+
+    private void DgOrders_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (DgOrders.SelectedItem is OrderDisplayItem selected)
+        {
+            OpenOrderDetail(selected.Id);
+        }
+    }
+
+    private void BtnViewOrderDetail_Click(object sender, RoutedEventArgs e)
+    {
+        if (DgOrders.SelectedItem is OrderDisplayItem selected)
+        {
+            OpenOrderDetail(selected.Id);
+        }
+        else
+        {
+            MessageBox.Show("Vui lòng chọn 1 đơn hàng để xem chi tiết!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
+    private async Task UpdateQuickOrderStatusAsync(OrderStatus newStatus, string actionName)
+    {
+        if (DgOrders.SelectedItem is not OrderDisplayItem selected)
+        {
+            MessageBox.Show($"Vui lòng chọn 1 đơn hàng trên danh sách để {actionName}!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            using var scope = App.ServiceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<CatalogContext>();
+
+            var order = await context.Orders.FindAsync(selected.Id);
+            if (order != null)
+            {
+                order.Status = newStatus;
+                await context.SaveChangesAsync();
+                await LoadDataAsync();
+                MessageBox.Show($"Đã chuyển đơn hàng #{selected.Id} sang trạng thái [{newStatus}]!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi cập nhật trạng thái: {ex.Message}", "Lỗi CSDL", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async void BtnQuickShipping_Click(object sender, RoutedEventArgs e)
+    {
+        await UpdateQuickOrderStatusAsync(OrderStatus.Shipping, "chuyển sang đang giao hàng");
+    }
+
+    private async void BtnQuickComplete_Click(object sender, RoutedEventArgs e)
+    {
+        await UpdateQuickOrderStatusAsync(OrderStatus.Completed, "hoàn thành đơn hàng");
+    }
+
+    private async void BtnQuickCancel_Click(object sender, RoutedEventArgs e)
+    {
+        await UpdateQuickOrderStatusAsync(OrderStatus.Cancelled, "hủy đơn hàng");
     }
 
     // ================= 5. ĐIỀU HƯỚNG TAB TRÊN SIDEBAR =================
