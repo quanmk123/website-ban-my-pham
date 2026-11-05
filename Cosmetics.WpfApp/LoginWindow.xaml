@@ -1,0 +1,135 @@
+<Window x:Class="Cosmetics.WpfApp.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Đăng Nhập Hệ Thống - BeautyStore"
+        Height="540" Width="820"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F4F5F9"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#D4788C"/>
+        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#B85D72"/>
+        <SolidColorBrush x:Key="SidebarBgBrush" Color="#1E1E2F"/>
+        <SolidColorBrush x:Key="TextDarkBrush" Color="#2A2A38"/>
+        
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,5,0,14"/>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,5,0,14"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="340"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- CỘT TRÁI: BANNER THƯƠNG HIỆU -->
+        <Border Grid.Column="0" Background="{StaticResource SidebarBgBrush}" Padding="35,40">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- LOGO & BRAND -->
+                <StackPanel Grid.Row="0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <TextBlock Text="🌸" FontSize="34" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="BeautyStore" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <TextBlock Text="COSMETICS MANAGEMENT" FontSize="9" FontWeight="Bold" Foreground="{StaticResource PrimaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Separator Background="#2E2E42" Margin="0,15,0,20"/>
+                </StackPanel>
+
+                <!-- GIỚI THIỆU PHÂN HỆ VÀ KIẾN TRÚC -->
+                <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                    <TextBlock Text="HỆ THỐNG QUẢN LÝ BÁN LẺ" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,10"/>
+                    <TextBlock Text="• Nền tảng: WPF Desktop (.NET 10)" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• CSDL: SQL Server LocalDB" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• Kiến trúc: Clean Architecture / 3-Tier" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• Xác thực: ASP.NET Core Identity" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,15"/>
+
+                    <Border Background="#252538" CornerRadius="8" Padding="12,10" Margin="0,10,0,0">
+                        <TextBlock Text="💡 Hỗ trợ 3 tác nhân nghiệp vụ riêng biệt: Chủ Shop (Admin), Quản Lý Kho và Thu Ngân POS." 
+                                   FontSize="11" Foreground="#C5C5D8" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- BẢN QUYỀN -->
+                <TextBlock Grid.Row="2" Text="© 2026 BeautyStore System - Phenikaa" FontSize="11" Foreground="#6A6A80" HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- CỘT PHẢI: FORM ĐĂNG NHẬP & CHỌN VAI TRÒ -->
+        <Border Grid.Column="1" Background="#FFFFFF" Padding="40,35">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="ĐĂNG NHẬP HỆ THỐNG" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextDarkBrush}"/>
+                <TextBlock Text="Vui lòng đăng nhập hoặc chọn nhanh vai trò để trải nghiệm" FontSize="12" Foreground="#718096" Margin="0,4,0,20"/>
+
+                <!-- 3 NÚT CHỌN NHANH VAI TRÒ (TIỆN LỢI KHI THUYẾT TRÌNH) -->
+                <TextBlock Text="Chọn nhanh tài khoản mẫu (1 click):" FontSize="11" FontWeight="Bold" Foreground="#A0AEC0" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Content="👑 Admin" Click="BtnQuickRole_Click" Tag="Admin"
+                            Background="#FDF2F4" Foreground="{StaticResource PrimaryBrush}" FontWeight="Bold" 
+                            BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1" Padding="8,8" Margin="0,0,5,0" Cursor="Hand"/>
+
+                    <Button Grid.Column="1" Content="📦 Quản lý kho" Click="BtnQuickRole_Click" Tag="Manager"
+                            Background="#EEF2FF" Foreground="#4F46E5" FontWeight="Bold" 
+                            BorderBrush="#4F46E5" BorderThickness="1" Padding="8,8" Margin="3,0,3,0" Cursor="Hand"/>
+
+                    <Button Grid.Column="2" Content="🛍️ Thu ngân" Click="BtnQuickRole_Click" Tag="Cashier"
+                            Background="#ECFDF5" Foreground="#10B981" FontWeight="Bold" 
+                            BorderBrush="#10B981" BorderThickness="1" Padding="8,8" Margin="5,0,0,0" Cursor="Hand"/>
+                </Grid>
+
+                <!-- FORM NHẬP TÀI KHOẢN -->
+                <TextBlock Text="Tên đăng nhập / Email (*):" FontSize="12" FontWeight="SemiBold" Foreground="#4A5568"/>
+                <TextBox x:Name="TxtEmail" Text="admin@beauty.com"/>
+
+                <TextBlock Text="Mật khẩu (*):" FontSize="12" FontWeight="SemiBold" Foreground="#4A5568"/>
+                <PasswordBox x:Name="TxtPassword"/>
+
+                <TextBlock Text="Vai trò đăng nhập (Phân quyền):" FontSize="12" FontWeight="SemiBold" Foreground="#4A5568"/>
+                <ComboBox x:Name="CboRole" SelectedIndex="0" Padding="10,8" Margin="0,5,0,22">
+                    <ComboBoxItem Content="👑 Admin (Toàn quyền quản trị &amp; Doanh thu)" Tag="Admin"/>
+                    <ComboBoxItem Content="📦 Quản lý kho (Kho hàng &amp; Cập nhật sản phẩm)" Tag="Manager"/>
+                    <ComboBoxItem Content="🛍️ Thu ngân (Bán hàng POS &amp; Duyệt đơn hàng)" Tag="Cashier"/>
+                </ComboBox>
+
+                <!-- NÚT ĐĂNG NHẬP CHÍNH -->
+                <Button Content="🚀 ĐĂNG NHẬP VÀO HỆ THỐNG" Click="BtnLogin_Click" 
+                        Background="{StaticResource PrimaryBrush}" Foreground="#FFFFFF" FontWeight="Bold" 
+                        FontSize="14" Padding="14,12" BorderThickness="0" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

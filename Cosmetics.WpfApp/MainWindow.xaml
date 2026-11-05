@@ -120,21 +120,31 @@
                             <TextBlock Text="Quản lý đơn hàng"/>
                         </StackPanel>
                     </Button>
+
+                    <Button x:Name="BtnNavCustomers" Style="{StaticResource SidebarButtonStyle}" Click="NavButton_Click" Tag="Customers">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="👥" FontSize="16" Margin="0,0,12,0"/>
+                            <TextBlock Text="Khách hàng"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
-                <!-- FOOTER SIDEBAR: TÀI KHOẢN & LÀM MỚI -->
+                <!-- FOOTER SIDEBAR: TÀI KHOẢN, PHÂN QUYỀN & ĐĂNG XUẤT -->
                 <Border Grid.Row="2" Background="#181824" Padding="15" Margin="0,0,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Quản trị viên" FontSize="11" Foreground="#A0A0B2"/>
-                            <TextBlock Text="admin@beauty.com" FontSize="12" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock x:Name="TxtCurrentUserRole" Text="Chủ shop (Admin)" FontSize="11" Foreground="#A0A0B2"/>
+                            <TextBlock x:Name="TxtCurrentUserEmail" Text="admin@beauty.com" FontSize="12" FontWeight="SemiBold" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
                         <Button Grid.Column="1" Content="🔄" ToolTip="Làm mới dữ liệu CSDL" Click="BtnRefreshAll_Click" 
-                                Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" FontSize="16" Cursor="Hand" Padding="5"/>
+                                Background="Transparent" Foreground="#FFFFFF" BorderThickness="0" FontSize="14" Cursor="Hand" Padding="4" Margin="0,0,2,0"/>
+                        <Button Grid.Column="2" Content="🚪" ToolTip="Đăng xuất tài khoản" Click="BtnLogout_Click" 
+                                Background="Transparent" Foreground="#EF4444" BorderThickness="0" FontSize="14" Cursor="Hand" Padding="4"/>
                     </Grid>
                 </Border>
             </Grid>
@@ -159,6 +169,9 @@
                         <TextBlock x:Name="TxtPageSubtitle" Text="Theo dõi doanh thu, số lượng đơn hàng và tình trạng kho mỹ phẩm" FontSize="12" Foreground="#8A8A9E" Margin="0,2,0,0"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="BtnExportExcel" Content="📊 Xuất Báo Cáo Excel" Click="BtnExportExcel_Click"
+                                Background="#10B981" Foreground="#FFFFFF" FontWeight="Bold" FontSize="12"
+                                Padding="12,6" Margin="0,0,10,0" BorderThickness="0" Cursor="Hand"/>
                         <Border Background="#E8F8F0" CornerRadius="15" Padding="12,5">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🟢" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
@@ -452,6 +465,43 @@
                                     <DataGridTextColumn Header="Tổng Tiền (VNĐ)" Binding="{Binding FormattedTotalPrice}" Width="140"/>
                                     <DataGridTextColumn Header="Trạng Thái" Binding="{Binding StatusText}" Width="140"/>
                                     <DataGridTextColumn Header="Ngày Đặt" Binding="{Binding FormattedOrderDate}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- 5. TAB QUẢN LÝ KHÁCH HÀNG -->
+                <Grid x:Name="TabCustomers" Visibility="Collapsed">
+                    <Border Background="#FFFFFF" CornerRadius="12" Padding="20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,15">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TxtCustomerFilter" Padding="10,8" FontSize="14" 
+                                         TextChanged="TxtCustomerFilter_TextChanged" ToolTip="Tìm khách hàng theo tên, số điện thoại, địa chỉ..."/>
+                                <Button Grid.Column="1" Content="🔄 Làm Mới Danh Bạ" Click="BtnRefreshCustomers_Click" 
+                                        Background="{StaticResource PrimaryBrush}" Foreground="#FFFFFF" FontWeight="Bold" 
+                                        Padding="14,8" Margin="10,0,0,0" BorderThickness="0" Cursor="Hand"/>
+                            </Grid>
+
+                            <DataGrid Grid.Row="1" x:Name="DgCustomers" AutoGenerateColumns="False" IsReadOnly="True"
+                                      GridLinesVisibility="Horizontal" BorderThickness="0" Background="Transparent">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="STT" Binding="{Binding Index}" Width="50"/>
+                                    <DataGridTextColumn Header="Họ và Tên Khách Hàng" Binding="{Binding Name}" Width="180"/>
+                                    <DataGridTextColumn Header="Số Điện Thoại" Binding="{Binding Phone}" Width="130"/>
+                                    <DataGridTextColumn Header="Địa Chỉ Nhận Hàng" Binding="{Binding Address}" Width="*"/>
+                                    <DataGridTextColumn Header="Số Đơn Mua" Binding="{Binding TotalOrders}" Width="90"/>
+                                    <DataGridTextColumn Header="Tổng Chi Tiêu (VNĐ)" Binding="{Binding FormattedTotalSpent}" Width="150"/>
+                                    <DataGridTextColumn Header="Hạng Khách Hàng" Binding="{Binding CustomerTier}" Width="130"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>

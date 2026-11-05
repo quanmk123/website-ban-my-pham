@@ -148,3 +148,4 @@ public class OrderItemDetailDisplay
     public int Units { get; set; }
     public decimal Subtotal => UnitPrice * Units;
 }
+

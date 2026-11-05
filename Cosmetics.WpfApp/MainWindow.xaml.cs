@@ -15,17 +15,63 @@ public partial class MainWindow : Window
     private List<CatalogItem> _allProducts = new();
     private List<Order> _allOrders = new();
     private readonly ObservableCollection<PosCartItem> _posCart = new();
+    private List<CustomerDisplayItem> _allCustomers = new();
 
-    public MainWindow()
+    private string _currentRole = "Admin";
+    private string _currentUserDisplayName = "Chủ cửa hàng (Admin)";
+    private string _currentUserEmail = "admin@beauty.com";
+
+    public MainWindow() : this("Admin", "Chủ cửa hàng (Admin)", "admin@beauty.com")
+    {
+    }
+
+    public MainWindow(string role, string roleDisplayName, string email)
     {
         InitializeComponent();
+        _currentRole = role;
+        _currentUserDisplayName = roleDisplayName;
+        _currentUserEmail = email;
         DgPosCart.ItemsSource = _posCart;
         Loaded += MainWindow_Loaded;
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
+        ApplyRolePermissions();
         await LoadDataAsync();
+    }
+
+    private void ApplyRolePermissions()
+    {
+        TxtCurrentUserRole.Text = _currentUserDisplayName;
+        TxtCurrentUserEmail.Text = _currentUserEmail;
+
+        if (_currentRole == "Manager")
+        {
+            // Quản lý kho: Thấy Dashboard, Kho hàng, Khách hàng. Ẩn POS và Đơn hàng
+            BtnNavPos.Visibility = Visibility.Collapsed;
+            BtnNavOrders.Visibility = Visibility.Collapsed;
+            SwitchTab("Products");
+        }
+        else if (_currentRole == "Cashier")
+        {
+            // Thu ngân: Thấy POS, Đơn hàng, Khách hàng. Ẩn Dashboard, Kho hàng, nút xuất Excel
+            BtnNavDashboard.Visibility = Visibility.Collapsed;
+            BtnNavProducts.Visibility = Visibility.Collapsed;
+            BtnExportExcel.Visibility = Visibility.Collapsed;
+            SwitchTab("Pos");
+        }
+        else
+        {
+            // Admin: Toàn quyền hiển thị đầy đủ
+            BtnNavDashboard.Visibility = Visibility.Visible;
+            BtnNavPos.Visibility = Visibility.Visible;
+            BtnNavProducts.Visibility = Visibility.Visible;
+            BtnNavOrders.Visibility = Visibility.Visible;
+            BtnNavCustomers.Visibility = Visibility.Visible;
+            BtnExportExcel.Visibility = Visibility.Visible;
+            SwitchTab("Dashboard");
+        }
     }
 
     private async Task LoadDataAsync()
@@ -59,6 +105,9 @@ public partial class MainWindow : Window
 
             // 6. Cập nhật danh sách đơn hàng
             FilterOrders();
+
+            // 7. Cập nhật danh sách khách hàng
+            UpdateCustomers();
         }
         catch (Exception ex)
         {
@@ -446,34 +495,155 @@ public partial class MainWindow : Window
     }
 
     // ================= 5. ĐIỀU HƯỚNG TAB TRÊN SIDEBAR =================
+    private void SwitchTab(string tabTag)
+    {
+        TabDashboard.Visibility = tabTag == "Dashboard" ? Visibility.Visible : Visibility.Collapsed;
+        TabPos.Visibility = tabTag == "Pos" ? Visibility.Visible : Visibility.Collapsed;
+        TabProducts.Visibility = tabTag == "Products" ? Visibility.Visible : Visibility.Collapsed;
+        TabOrders.Visibility = tabTag == "Orders" ? Visibility.Visible : Visibility.Collapsed;
+        TabCustomers.Visibility = tabTag == "Customers" ? Visibility.Visible : Visibility.Collapsed;
+
+        switch (tabTag)
+        {
+            case "Dashboard":
+                TxtPageTitle.Text = "Tổng quan Cửa hàng";
+                TxtPageSubtitle.Text = "Theo dõi doanh thu, số lượng đơn hàng và tình trạng kho mỹ phẩm";
+                break;
+            case "Pos":
+                TxtPageTitle.Text = "Bán Hàng Tại Quầy (POS)";
+                TxtPageSubtitle.Text = "Nhấp đúp chuột vào mỹ phẩm bên trái để thêm vào hóa đơn thanh toán";
+                break;
+            case "Products":
+                TxtPageTitle.Text = "Kho Mỹ Phẩm Chính Hãng";
+                TxtPageSubtitle.Text = "Quản lý danh sách, giá cả và số lượng tồn kho sản phẩm";
+                break;
+            case "Orders":
+                TxtPageTitle.Text = "Quản Lý Đơn Hàng";
+                TxtPageSubtitle.Text = "Tra cứu tiến độ giao hàng và doanh thu từng đơn của khách";
+                break;
+            case "Customers":
+                TxtPageTitle.Text = "Quản Lý Khách Hàng";
+                TxtPageSubtitle.Text = "Danh bạ khách hàng thân thiết, lịch sử mua hàng và phân hạng thành viên";
+                break;
+        }
+    }
+
     private void NavButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.Tag is string tabTag)
         {
-            TabDashboard.Visibility = tabTag == "Dashboard" ? Visibility.Visible : Visibility.Collapsed;
-            TabPos.Visibility = tabTag == "Pos" ? Visibility.Visible : Visibility.Collapsed;
-            TabProducts.Visibility = tabTag == "Products" ? Visibility.Visible : Visibility.Collapsed;
-            TabOrders.Visibility = tabTag == "Orders" ? Visibility.Visible : Visibility.Collapsed;
+            SwitchTab(tabTag);
+        }
+    }
 
-            switch (tabTag)
+    // ================= 6. XỬ LÝ KHÁCH HÀNG =================
+    private void UpdateCustomers()
+    {
+        var grouped = _allOrders
+            .Where(o => o.ShipToAddress != null && !string.IsNullOrWhiteSpace(o.ShipToAddress.PhoneNumber))
+            .GroupBy(o => o.ShipToAddress.PhoneNumber)
+            .Select((g, idx) =>
             {
-                case "Dashboard":
-                    TxtPageTitle.Text = "Tổng quan Cửa hàng";
-                    TxtPageSubtitle.Text = "Theo dõi doanh thu, số lượng đơn hàng và tình trạng kho mỹ phẩm";
-                    break;
-                case "Pos":
-                    TxtPageTitle.Text = "Bán Hàng Tại Quầy (POS)";
-                    TxtPageSubtitle.Text = "Nhấp đúp chuột vào mỹ phẩm bên trái để thêm vào hóa đơn thanh toán";
-                    break;
-                case "Products":
-                    TxtPageTitle.Text = "Kho Mỹ Phẩm Chính Hãng";
-                    TxtPageSubtitle.Text = "Quản lý danh sách, giá cả và số lượng tồn kho sản phẩm";
-                    break;
-                case "Orders":
-                    TxtPageTitle.Text = "Quản Lý Đơn Hàng";
-                    TxtPageSubtitle.Text = "Tra cứu tiến độ giao hàng và doanh thu từng đơn của khách";
-                    break;
+                var first = g.First();
+                decimal totalSpent = g.Where(o => o.Status == OrderStatus.Completed).Sum(o => o.TotalPrice);
+                string tier = totalSpent >= 1_500_000 ? "🌟 VIP Kim Cương" : (totalSpent >= 500_000 ? "💎 Khách Thân Thiết" : "🌸 Khách Mới");
+                string fullAddr = string.Join(", ", new[] { first.ShipToAddress.Street, first.ShipToAddress.Ward, first.ShipToAddress.District, first.ShipToAddress.City }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                return new CustomerDisplayItem
+                {
+                    Index = idx + 1,
+                    Name = first.ShipToAddress.ReceiverName,
+                    Phone = g.Key,
+                    Address = string.IsNullOrWhiteSpace(fullAddr) ? "Mua tại quầy" : fullAddr,
+                    TotalOrders = g.Count(),
+                    TotalSpent = totalSpent,
+                    CustomerTier = tier
+                };
+            }).OrderByDescending(c => c.TotalSpent).ToList();
+
+        _allCustomers = grouped;
+        FilterCustomers();
+    }
+
+    private void FilterCustomers()
+    {
+        if (DgCustomers == null) return;
+        string query = TxtCustomerFilter?.Text?.Trim().ToLower() ?? string.Empty;
+        var filtered = _allCustomers.Where(c =>
+            string.IsNullOrEmpty(query) ||
+            c.Name.ToLower().Contains(query) ||
+            c.Phone.ToLower().Contains(query) ||
+            c.Address.ToLower().Contains(query)
+        ).ToList();
+
+        DgCustomers.ItemsSource = filtered;
+    }
+
+    private void TxtCustomerFilter_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        FilterCustomers();
+    }
+
+    private void BtnRefreshCustomers_Click(object sender, RoutedEventArgs e)
+    {
+        UpdateCustomers();
+        MessageBox.Show("Đã làm mới danh bạ khách hàng!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+    }
+
+    // ================= 7. XUẤT EXCEL & ĐĂNG XUẤT =================
+    private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var saveDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "Excel CSV (*.csv)|*.csv|All Files (*.*)|*.*",
+                FileName = $"BaoCao_BeautyStore_{DateTime.Now:yyyyMMdd_HHmmss}.csv",
+                Title = "Lưu Báo Cáo Doanh Thu & Kho Hàng"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                using var writer = new System.IO.StreamWriter(saveDialog.FileName, false, System.Text.Encoding.UTF8);
+                writer.WriteLine("sep=,");
+                writer.WriteLine("=== BÁO CÁO TỔNG QUAN BEAUTYSTORE ===");
+                writer.WriteLine($"Ngày xuất báo cáo: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
+                writer.WriteLine($"Người xuất: {_currentUserDisplayName} ({_currentUserEmail})");
+                writer.WriteLine();
+                writer.WriteLine($"Tổng doanh thu hoàn thành: {TxtStatRevenue.Text}");
+                writer.WriteLine($"Tổng số đơn hàng: {TxtStatOrders.Text}");
+                writer.WriteLine($"Tổng số sản phẩm trong kho: {TxtStatProducts.Text}");
+                writer.WriteLine($"Cảnh báo tồn kho thấp (<5): {TxtStatLowStock.Text}");
+                writer.WriteLine();
+                writer.WriteLine("=== DANH SÁCH SẢN PHẨM TRONG KHO ===");
+                writer.WriteLine("ID,Tên Mỹ Phẩm,Thương Hiệu,Loại Sản Phẩm,Giá Bán (VNĐ),Giá Gốc (VNĐ),Tồn Kho,Loại Da");
+
+                foreach (var p in _allProducts)
+                {
+                    string brand = p.CatalogBrand?.Name ?? "";
+                    string type = p.CatalogType?.Name ?? "";
+                    string cleanName = p.Name.Replace(",", " ");
+                    writer.WriteLine($"{p.Id},{cleanName},{brand},{type},{p.Price},{p.OriginalPrice},{p.StockQuantity},{p.SkinType}");
+                }
+
+                MessageBox.Show($"Xuất báo cáo Excel thành công!\nĐường dẫn: {saveDialog.FileName}", 
+                                "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi xuất file Excel: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void BtnLogout_Click(object sender, RoutedEventArgs e)
+    {
+        var confirm = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất khỏi tài khoản hiện tại không?", 
+                                      "Xác nhận đăng xuất", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (confirm == MessageBoxResult.Yes)
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+            this.Close();
         }
     }
 
@@ -482,6 +652,19 @@ public partial class MainWindow : Window
         await LoadDataAsync();
         MessageBox.Show("Dữ liệu đã được đồng bộ mới nhất từ CSDL SQL Server!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
     }
+}
+
+// Model hỗ trợ hiển thị danh bạ khách hàng
+public class CustomerDisplayItem
+{
+    public int Index { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public int TotalOrders { get; set; }
+    public decimal TotalSpent { get; set; }
+    public string FormattedTotalSpent => TotalSpent.ToString("N0") + " ₫";
+    public string CustomerTier { get; set; } = "🌸 Khách Mới";
 }
 
 // Model hỗ trợ hiển thị giỏ hàng bán lẻ POS

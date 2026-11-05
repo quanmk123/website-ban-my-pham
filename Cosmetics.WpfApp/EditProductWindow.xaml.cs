@@ -160,3 +160,4 @@ public partial class EditProductWindow : Window
         Close();
     }
 }
+
