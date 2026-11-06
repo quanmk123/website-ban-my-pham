@@ -58,17 +58,17 @@
                     <Separator Background="#2E2E42" Margin="0,15,0,20"/>
                 </StackPanel>
 
-                <!-- GIỚI THIỆU PHÂN HỆ VÀ KIẾN TRÚC -->
+                <!-- GIỚI THIỆU THƯƠNG HIỆU VÀ SẢN PHẨM -->
                 <StackPanel Grid.Row="1" VerticalAlignment="Center">
-                    <TextBlock Text="HỆ THỐNG QUẢN LÝ BÁN LẺ" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,10"/>
-                    <TextBlock Text="• Nền tảng: WPF Desktop (.NET 10)" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
-                    <TextBlock Text="• CSDL: SQL Server LocalDB" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
-                    <TextBlock Text="• Kiến trúc: Clean Architecture / 3-Tier" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
-                    <TextBlock Text="• Xác thực: ASP.NET Core Identity" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,15"/>
+                    <TextBlock Text="THẾ GIỚI MỸ PHẨM CHÍNH HÃNG" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,10"/>
+                    <TextBlock Text="• 100% Sản phẩm nhập khẩu chính hãng" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• Đa dạng danh mục: Skincare, Makeup, Body" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• Phù hợp mọi loại da: Da dầu, mụn, da nhạy cảm" FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,6"/>
+                    <TextBlock Text="• Thương hiệu hàng đầu: CeraVe, Innisfree, MAC..." FontSize="12" Foreground="#A0A0B8" Margin="0,0,0,15"/>
 
                     <Border Background="#252538" CornerRadius="8" Padding="12,10" Margin="0,10,0,0">
-                        <TextBlock Text="💡 Hỗ trợ 3 tác nhân nghiệp vụ riêng biệt: Chủ Shop (Admin), Quản Lý Kho và Thu Ngân POS." 
-                                   FontSize="11" Foreground="#C5C5D8" TextWrapping="Wrap"/>
+                        <TextBlock Text="🌸 &quot;Nâng niu vẻ đẹp tự nhiên của bạn – Giải pháp chăm sóc da an toàn, lành tính và chuẩn khoa học.&quot;" 
+                                   FontSize="11" Foreground="#C5C5D8" TextWrapping="Wrap" LineHeight="16"/>
                     </Border>
                 </StackPanel>
 
